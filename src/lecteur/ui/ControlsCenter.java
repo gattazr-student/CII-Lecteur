@@ -3,12 +3,14 @@ package lecteur.ui;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JToggleButton;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 import javax.swing.JSlider;
 import javax.swing.JLabel;
 
 public class ControlsCenter extends JPanel {
 
-    public ControlsCenter(){
+    public ControlsCenter(ItemListener aItemListener){
         setLayout(new BorderLayout());
 
         /* Panel SOUTH */
@@ -17,9 +19,12 @@ public class ControlsCenter extends JPanel {
         wPanelSouth.add(new JSlider(0,100, 100), BorderLayout.CENTER);
         JPanel wButtons = new JPanel();
         wButtons.add(new JToggleButton("Equalizer"));
-        wButtons.add(new JToggleButton("Hide/Show"));
+        JToggleButton wShowHideButton = new JToggleButton("Hide/Show");
+        wButtons.add(wShowHideButton);
         wPanelSouth.add(wButtons, BorderLayout.EAST);
         this.add(wPanelSouth, BorderLayout.SOUTH);
+
+        wShowHideButton.addItemListener(aItemListener);
 
         /* Panel Center */
         JPanel wPanelCenter = new JPanel();

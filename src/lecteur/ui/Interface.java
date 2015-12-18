@@ -3,54 +3,65 @@ package lecteur.ui;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
-
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.ComponentEvent;
-//import java.awt.Dimension;
 
-public class Interface extends JFrame implements ComponentListener {
+public class Interface extends JFrame  {
 
-	private static int X_MIN = 700;
-	private static int Y_MIN = 100;
-	private static int Y_SEUIL = 200;
+	private static double X_MIN = 700;
+	private static double Y_MIN = 100;
+	private static double Y_SEUIL = 200;
+
+	private ControlsPanel pControls;
+	private ListPanel pList;
 
 	public Interface(String aTitle){
 		super(aTitle);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		setLayout(new BorderLayout());
+		this.addComponentListener(new MyComponentListener());
 
-		this.addComponentListener(this);
+		/* Control panel */
+		ItemListener wItemListener = new ItemListener() {
+            public void itemStateChanged(ItemEvent ev) {
+                if(ev.getStateChange()==ItemEvent.SELECTED){
+					resizeFrame(X_MIN, Y_SEUIL+1);
+                } else if(ev.getStateChange()==ItemEvent.DESELECTED){
+                    resizeFrame(X_MIN, Y_MIN);
+                }
+            }
+        };
+		pControls = new ControlsPanel(wItemListener);
+		add(pControls, BorderLayout.NORTH);
 
-		add(new ControlsPanel(), BorderLayout.NORTH);
-		add(new ListPanel(), BorderLayout.CENTER);
+		/* List panel */
+		pList = new ListPanel();
+
 		pack();
-
-		this.setSize(X_MIN,Y_MIN);
+		X_MIN = getSize().getWidth();
+		Y_MIN = getSize().getHeight();
 	}
 
-	public void componentResized(ComponentEvent e) {
-//		System.out.println(e.getComponent().getClass().getName() + " --- Resized : " + this.getSize().getWidth()+ " / " + this.getSize().getHeight());
-		if(this.getSize().getWidth() < X_MIN || this.getSize().getHeight() < Y_MIN) {
-			setSize(X_MIN,Y_MIN);
+	public void resizeFrame(double aWidth, double aHeight){
+		double wWidth = aWidth;
+		double wHeight = aHeight;
+
+		if(aWidth <= X_MIN){
+			wWidth = X_MIN;
 		}
 
-		if (this.getSize().getHeight() < Y_SEUIL) {
-			setSize(X_MIN,Y_MIN);
+		if(aHeight <= Y_SEUIL){
+			wHeight = Y_MIN;
+			remove(pList);
+		}else{
+			add(pList, BorderLayout.CENTER);
 		}
-  }
 
-	public void componentHidden(ComponentEvent e) {
-//		System.out.println(e.getComponent().getClass().getName() + " --- Hidden");
+		setSize((int)wWidth, (int)wHeight);
 	}
-
-  public void componentMoved(ComponentEvent e) {
-//    System.out.println(e.getComponent().getClass().getName() + " --- Moved");
-  }
-
-  public void componentShown(ComponentEvent e) {
-//    System.out.println(e.getComponent().getClass().getName() + " --- Shown");
-  }
 
 	public static void main(String[] aArgs){
 		SwingUtilities.invokeLater(new Runnable() {
@@ -58,5 +69,21 @@ public class Interface extends JFrame implements ComponentListener {
 				new Interface("Lecteur Multimédia").setVisible(true);
 			}
 		});
+	}
+
+	public class MyComponentListener implements ComponentListener {
+
+		public void componentResized(ComponentEvent e) {
+			resizeFrame(getSize().getWidth(), getSize().getHeight());
+		}
+
+		public void componentHidden(ComponentEvent e) {
+		}
+
+		public void componentMoved(ComponentEvent e) {
+		}
+
+		public void componentShown(ComponentEvent e) {
+		}
 	}
 }
