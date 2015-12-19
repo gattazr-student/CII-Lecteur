@@ -6,6 +6,9 @@ import java.awt.GridLayout;
 
 public class ControlsButtons extends JPanel {
 
+    /*
+	 * Construction du panel contenant les 6 boutons de controles de lectures
+	 */
     public ControlsButtons(){
         setLayout(new GridLayout(2, 3));
         add(new JButton("Back"));
